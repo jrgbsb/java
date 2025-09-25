@@ -1,72 +1,120 @@
 // ----------------------------
-// VARIABLES Y ARRAYS
+// VARIABLES
 // ----------------------------
-const lugares = ["caja", "cama", "ventana", "silla", "alfombra"];
-const intentosMaximos = 3;
-let croqueta = "";
+const lugares = ["cocina", "jardín", "dormitorio", "baño", "sala"];
+let intentosMax = 5;
+let intentosRestantes = intentosMax;
+
+// Lista de desafíos
+const desafios = [
+  { objeto: "croqueta", lugar: "" },
+  { objeto: "pelota", lugar: "" },
+  { objeto: "ratón de juguete", lugar: "" },
+  { objeto: "manta favorita", lugar: "" },
+  { objeto: "plumero", lugar: "" }
+];
+let desafioActual = 0;
+
+let victorias = 0;
+let derrotas = 0;
+let racha = 0;
+let record = localStorage.getItem("recordRacha") || 0;
 
 // ----------------------------
-// FUNCIONES
+// FUNCIONES PRINCIPALES
 // ----------------------------
-
-// 1. Esconder croqueta en lugar aleatorio
-function esconderCroqueta() {
-  const indice = Math.floor(Math.random() * lugares.length);
-  croqueta = lugares[indice];
-  console.log("DEBUG: La croqueta de Aragon está en -> " + croqueta); // Para probar
+function esconderObjeto() {
+  desafios[desafioActual].lugar = lugares[Math.floor(Math.random() * lugares.length)];
 }
 
-// 2. Preguntar al jugador dónde quiere buscar
-function preguntarLugar() {
-  let eleccion = prompt(
-    "¿Dónde crees que está la croqueta de Aragon? Lugares posibles:\n" + lugares.join(", ")
-  );
-  if (!eleccion) return ""; // Si el usuario cancela
-  return eleccion.toLowerCase();
+function mostrarMensaje(msj) {
+  document.getElementById("mensaje").textContent = msj;
 }
 
-// 3. Revisar si el jugador adivinó
-function revisarIntento(eleccion) {
-  if (eleccion === croqueta) {
-    alert("🎉 ¡Correcto! Aragon encontró la croqueta en la " + croqueta + " 😺");
-    return true;
+function intentar() {
+  const inputLugar = document.getElementById("inputLugar").value.toLowerCase();
+
+  // Validación: si no es un lugar válido, no gasta intento
+  if (!lugares.includes(inputLugar)) {
+    alert(`⚠️ Lugar inválido. Usa uno de estos: ${lugares.join(", ")}`);
+    return;
+  }
+
+  if (inputLugar === desafios[desafioActual].lugar) {
+    victorias++;
+    racha++;
+    if (racha > record) {
+      record = racha;
+      localStorage.setItem("recordRacha", record);
+    }
+
+    mostrarMensaje(`🎉 ¡Correcto! Aragón encontró su ${desafios[desafioActual].objeto} en la ${inputLugar}.`);
+    avanzarDesafio();
   } else {
-    alert("❌ No está en la " + eleccion + ". Aragon sigue buscando...");
-    return false;
-  }
-}
-
-// 4. Ejecutar el juego completo
-function jugar() {
-  alert("Bienvenido al juego del gatito Aragon 🐱\n¡Ayuda a Aragon a encontrar sus croquetas!");
-
-  esconderCroqueta();
-
-  let encontrado = false;
-  for (let i = 1; i <= intentosMaximos; i++) {
-    let eleccion = preguntarLugar();
-    if (!eleccion) {
-      alert("Cancelaste el juego. 🛑");
-      return;
-    }
-
-    if (revisarIntento(eleccion)) {
-      encontrado = true;
-      break;
+    intentosRestantes--;
+    if (intentosRestantes > 0) {
+      mostrarMensaje(`❌ No está en la ${inputLugar}. Intentos restantes: ${intentosRestantes}`);
     } else {
-      console.log("Intento " + i + ": Croqueta no encontrada en " + eleccion);
+      derrotas++;
+      racha = 0;
+      mostrarMensaje(`😿 Aragón no encontró su ${desafios[desafioActual].objeto}. Estaba en la ${desafios[desafioActual].lugar}.`);
+      avanzarDesafio();
     }
   }
+  actualizarEstadisticas();
+}
 
-  if (!encontrado) {
-    alert("😭 Aragon no encontró la croqueta. Estaba en la " + croqueta + ".");
+function avanzarDesafio() {
+  desafioActual++;
+  intentosRestantes = intentosMax;
+
+  if (desafioActual < desafios.length) {
+    esconderObjeto();
+    mostrarMensaje(`Nuevo desafío: encuentra la ${desafios[desafioActual].objeto}. Intentos: ${intentosRestantes}`);
+  } else {
+    mostrarMensaje("🎊 ¡Has completado todos los desafíos de Aragón!");
   }
+  actualizarEstadisticas();
+}
+
+function reiniciarJuego() {
+  desafioActual = 0;
+  intentosRestantes = intentosMax;
+  esconderObjeto();
+  mostrarMensaje(`Juego reiniciado. Encuentra la ${desafios[desafioActual].objeto}.`);
+  actualizarEstadisticas();
 }
 
 // ----------------------------
-// BUCLE PRINCIPAL REJUGABLE
+// ESTADÍSTICAS Y PROGRESO
 // ----------------------------
-do {
-  jugar();
-} while (confirm("¿Querés jugar otra vez? 🐱🍖"));
+function actualizarEstadisticas() {
+  document.getElementById("estadisticas").textContent = 
+    `Victorias: ${victorias} | Derrotas: ${derrotas}`;
+  document.getElementById("racha").textContent = 
+    `🔥 Racha de Aragón: ${racha} victorias seguidas | 🏆 Récord: ${record}`;
+  
+  // Progreso textual
+  document.getElementById("progreso").textContent =
+    `📊 Progreso: ${desafioActual + 1} / ${desafios.length} desafíos`;
+
+  // Barra de progreso gráfica
+  const progreso = Math.floor(((desafioActual + 1) / desafios.length) * 100);
+  const barra = document.getElementById("barraProgreso");
+  barra.style.width = progreso + "%";
+  barra.textContent = progreso + "%";
+}
+
+// ----------------------------
+// INICIALIZAR
+// ----------------------------
+document.getElementById("btnBuscar").addEventListener("click", intentar);
+document.getElementById("reiniciar").addEventListener("click", reiniciarJuego);
+
+// Setup inicial
+esconderObjeto();
+actualizarEstadisticas();
+mostrarMensaje(`Intentos restantes: ${intentosRestantes}. Desafío: encuentra la ${desafios[desafioActual].objeto}!`);
+
+
 
