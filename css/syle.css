@@ -1,74 +1,72 @@
-/* Estilos básicos para el juego */
+/* 🎨 Estilos generales */
 body {
   font-family: 'Roboto', sans-serif;
-}
-
-#mensaje {
+  background-color: #f8f9fa;
   color: #333;
 }
 
-#intentos {
-  color: #d63384;
-}   {
-
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f4f4f9;
-  color: #333;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-header {
-  background: #6a5acd;
+header, footer {
+  background-color: #0d6efd;
   color: white;
-  text-align: center;
-  padding: 1rem;
+}
+
+h1, h3, h4, h5 {
+  font-weight: 700;
 }
 
 main {
-  flex: 1;
-  padding: 20px;
-  max-width: 800px;
-  margin: auto;
+  min-height: 80vh;
 }
 
-h1, h2 {
-  color: #6a5acd;
+/* 🎮 Juego */
+.progress {
+  height: 28px;
 }
 
-#juego, #puntaje {
-  margin-bottom: 2rem;
+#mensaje {
+  min-height: 1.5em;
 }
 
-button {
-  background-color: #6a5acd;
-  color: white;
+/* 🛍️ Sección de tienda */
+#carrito-section {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  margin-top: 3rem;
+}
+
+#carrito-section h3 {
+  color: #0d6efd;
+  font-weight: 700;
+}
+
+#carrito-section .card {
   border: none;
-  padding: 10px 20px;
-  margin-top: 10px;
-  cursor: pointer;
-  border-radius: 5px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-button:hover {
-  background-color: #483d8b;
+#carrito-section .card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-.hidden {
-  display: none;
+#carrito-section .btn-outline-primary {
+  border-radius: 50px;
+  font-weight: 500;
 }
 
-.mensaje {
-  font-size: 1.2rem;
-  margin-top: 10px;
+#finalizarCompra {
+  border-radius: 8px;
+  padding: 10px 25px;
+  font-size: 1.1rem;
+}
+
+.btn-primary, .btn-success {
+  border-radius: 10px;
 }
 
 footer {
-  background: #6a5acd;
-  color: white;
-  text-align: center;
-  padding: 1rem;
+  margin-top: 3rem;
+  font-size: 0.9rem;
 }
